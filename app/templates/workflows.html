@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflows | AI Productivity</title>
+    <link rel="stylesheet" href="/static/premium.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .workflow-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workflow-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .workflow-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .workflow-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .workflow-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+
+        .workflow-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .trigger-tag {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            color: var(--text-muted);
+            text-transform: capitalize;
+        }
+
+        /* Toggle Switch CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.1);
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background: var(--primary-gradient);
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--glass-border);
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                <h2>AI Prod.</h2>
+            </div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-border-all"></i><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="/tasks" class="nav-link"><i class="fas fa-check-square"></i><span>Tasks</span></a></li>
+            <li class="nav-item"><a href="/notes" class="nav-link"><i class="fas fa-file-alt"></i><span>Notes</span></a></li>
+            <li class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-day"></i><span>Calendar</span></a></li>
+            <li class="nav-item"><a href="/workflows" class="nav-link active"><i class="fas fa-project-diagram"></i><span>Workflows</span></a></li>
+            <li class="nav-item"><a href="/analytics" class="nav-link"><i class="fas fa-chart-pie"></i><span>Analytics</span></a></li>
+            <li class="nav-item" style="margin-top: auto;"><a href="/profile" class="nav-link"><i class="fas fa-user"></i><span>Profile</span></a></li>
+            <li class="nav-item"><a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <header class="header">
+            <div>
+                <button class="mobile-nav-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Automations <i class="fas fa-cog" style="color: var(--accent); font-size: 1.5rem;"></i></h1>
+                <p>Manage AI-driven sequences</p>
+            </div>
+            <button class="btn-primary" onclick="document.getElementById('workflowModal').style.display='flex'">
+                <i class="fas fa-plus"></i> Create Workflow
+            </button>
+        </header>
+
+        <div class="workflow-grid" id="workflowsContainer">
+            <div class="empty-state">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 20px;"></i>
+                <p>Loading workflows...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Builder Modal -->
+    <div id="workflowModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; width: 100%; max-width: 500px; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">New Workflow <i class="fas fa-magic" style="color: var(--accent);"></i></h2>
+                <button onclick="document.getElementById('workflowModal').style.display='none'" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: var(--text-muted);">Workflow Name</label>
+                <input type="text" id="wfName" placeholder="e.g. Daily Data Sync" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; color: var(--text-main);" required>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: var(--text-muted);">Description</label>
+                <textarea id="wfDesc" placeholder="What does this automation do?" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; color: var(--text-main); height: 80px; resize: none;"></textarea>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: var(--text-muted);">IF (Condition)</label>
+                <select id="wfCondition" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; color: var(--text-main);">
+                    <option value="schedule" style="background: #1e1e2e;">Scheduled Timer (e.g. Daily at 9AM)</option>
+                    <option value="overdue" style="background: #1e1e2e;">Task Overdue</option>
+                    <option value="meeting tomorrow" style="background: #1e1e2e;">Meeting Tomorrow</option>
+                    <option value="manual" style="background: #1e1e2e;">Manual Toggle</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: var(--text-muted);">THEN (Action)</label>
+                <select id="wfAction" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; color: var(--text-main);">
+                    <option value="send_notification" style="background: #1e1e2e;">Send Notification</option>
+                    <option value="send_email" style="background: #1e1e2e;">Send Email Reminder</option>
+                    <option value="create_task" style="background: #1e1e2e;">Create a Task</option>
+                    <option value="send_summary" style="background: #1e1e2e;">Send Daily Summary</option>
+                </select>
+            </div>
+
+            <button onclick="submitWorkflow()" class="btn-primary" style="width: 100%;" id="wfSubmitBtn">
+                <i class="fas fa-satellite-dish"></i> Deploy Automation
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" style="z-index: 2000;"></div>
+
+    <script src="/static/theme.js"></script>
+    <script>
+        function escapeHtml(text) {
+            if (!text) return "AI Auto-Generated Workflow sequence.";
+            const div = document.createElement('div'); div.textContent = text; return div.innerHTML;
+        }
+
+        function showToast(message, type='success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function getToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'access_token') return value;
+            }
+            window.location.href = '/login';
+            return null;
+        }
+
+        async function fetchAPI(url, options = {}) {
+            const token = getToken();
+            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers };
+            try {
+                const response = await fetch(url, { ...options, headers });
+                if (response.status === 401) { window.location.href = '/login'; return null; }
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || data.message || `HTTP Error ${response.status}`);
+                return data;
+            } catch (err) {
+                showToast("Error: " + err.message, 'error');
+                throw err;
+            }
+        }
+
+        async function submitWorkflow() {
+            const name = document.getElementById('wfName').value;
+            const desc = document.getElementById('wfDesc').value;
+            const condition = document.getElementById('wfCondition').value;
+            const action = document.getElementById('wfAction').value;
+
+            if (!name) {
+                showToast("Please provide a workflow name.", "error");
+                return;
+            }
+
+            const btn = document.getElementById('wfSubmitBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deploying...';
+            btn.disabled = true;
+            
+            // Map the trigger type appropriately
+            let trigger_type = "event";
+            if (condition === "manual") trigger_type = "manual";
+            if (condition === "schedule") trigger_type = "scheduled";
+
+            const payload = {
+                name: name,
+                description: `IF ${condition} THEN ${action}: ` + desc,
+                trigger_type: trigger_type,
+                actions: [action]
+            };
+
+            try {
+                await fetchAPI('/api/workflows', { method: 'POST', body: JSON.stringify(payload) });
+                showToast("Workflow deployed successfully!");
+                document.getElementById('workflowModal').style.display = 'none';
+                document.getElementById('wfName').value = '';
+                document.getElementById('wfDesc').value = '';
+                await loadWorkflows();
+            } catch (e) {
+                // error is already toasted by fetchAPI, but we can log it
+                console.error(e);
+            } finally {
+                btn.innerHTML = '<i class="fas fa-satellite-dish"></i> Deploy Automation';
+                btn.disabled = false;
+            }
+        }
+
+        async function loadWorkflows() {
+            try {
+                const workflows = await fetchAPI('/api/workflows');
+                const container = document.getElementById('workflowsContainer');
+                
+                if (!workflows || workflows.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-robot" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                            <p style="font-size: 1.1rem; color: var(--text-main);">No automations found</p>
+                            <p>Ask your AI Assistant to "create workflow for [task]" to generate one!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = workflows.map(w => `
+                    <div class="workflow-card">
+                        <div class="workflow-header">
+                            <div class="workflow-title">
+                                <div class="workflow-icon"><i class="fas fa-project-diagram"></i></div>
+                                ${escapeHtml(w.name)}
+                            </div>
+                        </div>
+                        <div class="workflow-desc">
+                            ${escapeHtml(w.description)}
+                        </div>
+                        <div class="workflow-footer">
+                            <span class="trigger-tag"><i class="fas fa-bolt"></i> trigger: ${w.trigger_type || 'manual'}</span>
+                            <label class="switch">
+                                <input type="checkbox" ${w.is_active ? 'checked' : ''} onchange="toggleWorkflow(${w.id}, this)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+        
+        async function toggleWorkflow(id, checkbox) {
+            checkbox.disabled = true; // prevent multi clicks
+            try {
+                const res = await fetchAPI(`/api/workflows/${id}/toggle`, { method: 'POST' });
+                showToast(res.is_active ? "Workflow Actived" : "Workflow Paused", "success");
+            } catch (e) {
+                checkbox.checked = !checkbox.checked; // revert UI
+            } finally {
+                checkbox.disabled = false;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadWorkflows);
+    </script>
+</body>
+</html>

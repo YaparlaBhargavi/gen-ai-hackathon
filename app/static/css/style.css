@@ -1,0 +1,21 @@
+/* app/static/css/style.css */
+:root {
+  --primary: #667eea;
+  --dark: #1e293b;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, var(--primary), #764ba2);
+  color: var(--dark);
+}
+.navbar {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+

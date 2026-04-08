@@ -1,0 +1,16 @@
+{
+  "name": "AI Productivity Assistant",
+  "short_name": "AI Prod",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#8b5cf6",
+  "description": "Smart AI-driven productivity suite.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/8013/8013627.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

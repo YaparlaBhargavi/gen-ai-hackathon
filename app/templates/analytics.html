@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | AI Productivity</title>
+    <link rel="stylesheet" href="/static/premium.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            box-shadow: var(--glass-shadow);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.1);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .progress-bar-fill {
+            background: var(--primary-gradient);
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                <h2>AI Prod.</h2>
+            </div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="/dashboard" class="nav-link"><i class="fas fa-border-all"></i><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="/tasks" class="nav-link"><i class="fas fa-check-square"></i><span>Tasks</span></a></li>
+            <li class="nav-item"><a href="/notes" class="nav-link"><i class="fas fa-file-alt"></i><span>Notes</span></a></li>
+            <li class="nav-item"><a href="/calendar" class="nav-link"><i class="fas fa-calendar-day"></i><span>Calendar</span></a></li>
+            <li class="nav-item"><a href="/workflows" class="nav-link"><i class="fas fa-project-diagram"></i><span>Workflows</span></a></li>
+            <li class="nav-item"><a href="/analytics" class="nav-link active"><i class="fas fa-chart-pie"></i><span>Analytics</span></a></li>
+            <li class="nav-item" style="margin-top: auto;"><a href="/profile" class="nav-link"><i class="fas fa-user"></i><span>Profile</span></a></li>
+            <li class="nav-item"><a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <header class="header">
+            <div>
+                <button class="mobile-nav-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Analytics <i class="fas fa-chart-line" style="color: var(--accent); font-size: 1.5rem;"></i></h1>
+                <p>Track your productivity insights</p>
+            </div>
+        </header>
+
+        <div class="analytics-grid">
+            <div class="metric-card">
+                <i class="fas fa-bolt metric-icon"></i>
+                <div class="metric-value" id="scoreMetric">0</div>
+                <div class="metric-label">Daily AI Score</div>
+            </div>
+            
+            <div class="metric-card">
+                <i class="fas fa-clock metric-icon" style="color: #f59e0b;"></i>
+                <div class="metric-value" id="focusMetric" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0</div>
+                <div class="metric-label">Focus Time (min)</div>
+            </div>
+
+            <div class="metric-card">
+                <i class="fas fa-lightbulb metric-icon" style="color: #8b5cf6;"></i>
+                <div id="aiSuggestion" style="margin-top: 15px; font-size: 1.1rem; color: var(--text-main); font-weight: 500;">
+                    AI says...
+                </div>
+                <div class="metric-label" style="margin-top: 10px;">Weekly Insights</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3 style="margin-bottom: 20px; color: var(--text-main); font-size: 1.3rem;">Task Completion Rate</h3>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-weight: 500;">
+                <span id="completedCount">0 Completed</span>
+                <span id="pendingCount">0 Pending</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="completionBar" style="width: 0%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="/static/theme.js"></script>
+    <script>
+        function showToast(message, type='success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function getToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'access_token') return value;
+            }
+            window.location.href = '/login';
+            return null;
+        }
+
+        async function fetchAPI(url, options = {}) {
+            const token = getToken();
+            const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers };
+            try {
+                const response = await fetch(url, { ...options, headers });
+                if (response.status === 401) { window.location.href = '/login'; return null; }
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || data.message || `HTTP Error ${response.status}`);
+                return data;
+            } catch (err) {
+                showToast("Network Error: " + err.message, 'error');
+                throw err;
+            }
+        }
+
+        async function loadAnalytics() {
+            try {
+                const data = await fetchAPI('/api/analytics/metrics');
+                if(data) {
+                    animValue('scoreMetric', data.productivity_score);
+                    document.getElementById('focusMetric').innerText = data.focus_time;
+                    document.getElementById('aiSuggestion').innerHTML = `<i class="fas fa-sparkles" style="color:var(--accent);"></i> ${data.suggestion}`;
+                    
+                    document.getElementById('completedCount').innerText = `${data.tasks_completed} Completed`;
+                    document.getElementById('pendingCount').innerText = `${data.tasks_pending} Pending`;
+                    
+                    if (data.tasks_total > 0) {
+                        const pct = Math.round((data.tasks_completed / data.tasks_total) * 100);
+                        setTimeout(() => {
+                            document.getElementById('completionBar').style.width = pct + '%';
+                        }, 500);
+                    }
+                }
+            } catch(e) {}
+        }
+        
+        function animValue(id, value) {
+            const el = document.getElementById(id);
+            let start = 0;
+            const duration = 1500;
+            const step = Math.max(1, Math.floor(duration / (value || 1)));
+            
+            if (value === 0) { el.innerText = "0"; return; }
+            
+            const timer = setInterval(() => {
+                start += Math.ceil(value/30);
+                if (start >= value) {
+                    el.innerText = value;
+                    clearInterval(timer);
+                } else {
+                    el.innerText = start;
+                }
+            }, 50);
+        }
+
+        document.addEventListener("DOMContentLoaded", loadAnalytics);
+    </script>
+</body>
+</html>
